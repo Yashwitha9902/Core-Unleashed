@@ -124,15 +124,21 @@
                     const usnInput = document.getElementById('usn');
                     const emailInput = document.getElementById('email');
 
-                    // Build request body safely handling if inputs don't exist in all roles
-                    const reqBody = {
-                        role: role,
-                        usn: usnInput ? usnInput.value : '',
-                        email: emailInput ? emailInput.value : document.getElementById('usn').value, // Fallbacks
-                        password: document.getElementById('password').value
-                    };
+                    let endpoint = '';
+                    let reqBody = {};
 
-                    const response = await fetch('/login', {
+                    if (role === 'student') {
+                        endpoint = '/login/student';
+                        reqBody = { identifier: emailInput ? emailInput.value : usnInput.value, password: document.getElementById('password').value };
+                    } else if (role === 'recruiter') {
+                        endpoint = '/login/recruiter';
+                        reqBody = { work_email: emailInput ? emailInput.value : usnInput.value, password: document.getElementById('password').value };
+                    } else if (role === 'admin') {
+                        endpoint = '/login/admin';
+                        reqBody = { identifier: emailInput ? emailInput.value : usnInput.value, password: document.getElementById('password').value };
+                    }
+
+                    const response = await fetch(endpoint, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
